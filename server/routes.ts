@@ -26,6 +26,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!person) {
         return res.status(404).json({ message: "Person not found" });
       }
+      
+      // Increment view count
+      await storage.incrementViewCount(id);
+      
       res.json(person);
     } catch (error) {
       res.status(500).json({ message: "Error fetching person" });
@@ -134,6 +138,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(leaderboard);
     } catch (error) {
       res.status(500).json({ message: "Error fetching leaderboard" });
+    }
+  });
+
+  // Get person stats
+  app.get("/api/people/:id/stats", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const stats = await storage.getPersonStats(id);
+      if (!stats) {
+        return res.status(404).json({ message: "Person not found" });
+      }
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching stats" });
+    }
+  });
+
+  // Search people
+  app.get("/api/search", async (req, res) => {
+    try {
+      const query = req.query.q as string;
+      if (!query || query.trim().length < 2) {
+        return res.status(400).json({ message: "Search query must be at least 2 characters" });
+      }
+      const results = await storage.searchPeople(query.trim());
+      res.json(results);
+    } catch (error) {
+      res.status(500).json({ message: "Error searching people" });
+    }
+  });
+
+  // Get site statistics
+  app.get("/api/stats", async (req, res) => {
+    try {
+      const stats = await storage.getSiteStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching site stats" });
     }
   });
 

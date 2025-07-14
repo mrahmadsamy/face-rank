@@ -11,6 +11,10 @@ export const people = pgTable("people", {
   averageRating: real("average_rating").default(0),
   ratingCount: integer("rating_count").default(0),
   commentsCount: integer("comments_count").default(0),
+  facemashWins: integer("facemash_wins").default(0),
+  facemashLosses: integer("facemash_losses").default(0),
+  viewCount: integer("view_count").default(0),
+  isVerified: integer("is_verified").default(0), // For verified accounts
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -40,6 +44,10 @@ export const insertPersonSchema = createInsertSchema(people).omit({
   averageRating: true,
   ratingCount: true,
   commentsCount: true,
+  facemashWins: true,
+  facemashLosses: true,
+  viewCount: true,
+  isVerified: true,
   createdAt: true,
 });
 

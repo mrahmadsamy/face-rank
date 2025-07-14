@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRoute, Link } from "wouter";
-import { ArrowLeft, Star, MessageCircle, Users } from "lucide-react";
+import { ArrowLeft, Star, MessageCircle, Users, Eye, Trophy, Target, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,6 +27,11 @@ export default function PersonDetail() {
 
   const { data: comments = [] } = useQuery({
     queryKey: ["/api/people", personId, "comments"],
+    enabled: !!personId,
+  });
+
+  const { data: stats } = useQuery({
+    queryKey: ["/api/people", personId, "stats"],
     enabled: !!personId,
   });
 
@@ -161,22 +166,82 @@ export default function PersonDetail() {
               }}>
                 {ratingTitle.emoji} {ratingTitle.title}
               </div>
-              <div className="flex justify-center space-x-6 space-x-reverse text-sm text-gray-400">
-                <span className="flex items-center">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-400">
+                <span className="flex items-center justify-center">
                   <Star className="ml-2 h-4 w-4" />
                   {person.ratingCount || 0} تقييم
                 </span>
-                <span className="flex items-center">
+                <span className="flex items-center justify-center">
                   <MessageCircle className="ml-2 h-4 w-4" />
                   {person.commentsCount || 0} تعليق
                 </span>
-                <span className="flex items-center">
+                <span className="flex items-center justify-center">
+                  <Eye className="ml-2 h-4 w-4" />
+                  {person.viewCount || 0} مشاهدة
+                </span>
+                <span className="flex items-center justify-center">
                   <Users className="ml-2 h-4 w-4" />
                   {person.category}
                 </span>
               </div>
             </div>
           </Card>
+
+          {/* Stats Section */}
+          {stats && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <Card className="bg-[var(--cyber-gray)]/30 border border-[var(--neon-blue)]/20 p-6">
+                <h3 className="text-lg font-bold mb-4 text-[var(--neon-blue)] flex items-center">
+                  <Trophy className="ml-2 h-5 w-5" />
+                  إحصائيات FaceMash
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">إجمالي المقارنات:</span>
+                    <span className="font-bold text-white">{stats.totalVotes}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">معدل الفوز:</span>
+                    <span className="font-bold text-[var(--neon-green)]">{stats.winRate.toFixed(1)}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">المراتبة:</span>
+                    <span className="font-bold text-[var(--neon-pink)]">
+                      {stats.winRate >= 70 ? "نجم" : stats.winRate >= 50 ? "متوسط" : "ضعيف"}
+                    </span>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="bg-[var(--cyber-gray)]/30 border border-[var(--neon-green)]/20 p-6">
+                <h3 className="text-lg font-bold mb-4 text-[var(--neon-green)] flex items-center">
+                  <TrendingUp className="ml-2 h-5 w-5" />
+                  مؤشر الشعبية
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">فئة التقييم:</span>
+                    <span className="font-bold" style={{ color: ratingTitle.color }}>
+                      {ratingTitle.emoji} {ratingTitle.title}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">مستوى النشاط:</span>
+                    <span className="font-bold text-white">
+                      {(person.commentsCount || 0) > 10 ? "عالي" : 
+                       (person.commentsCount || 0) > 5 ? "متوسط" : "منخفض"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">حالة التحقق:</span>
+                    <span className="font-bold text-[var(--neon-blue)]">
+                      {person.isVerified ? "✓ موثق" : "غير موثق"}
+                    </span>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          )}
 
           {/* Rating Section */}
           <Card className="bg-[var(--cyber-gray)]/30 border border-[var(--neon-pink)]/20 p-6 mb-8">
