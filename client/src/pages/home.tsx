@@ -334,7 +334,7 @@ export default function Home() {
               
               <div className="bg-[var(--cyber-gray)]/50 rounded-2xl p-6 text-center border border-[var(--neon-pink)]/20">
                 <div className="text-3xl font-black text-[var(--neon-pink)] mb-2">
-                  {siteStats.avgRating.toFixed(1)}
+                  {siteStats ? (typeof siteStats.avgRating === 'number' ? siteStats.avgRating.toFixed(1) : parseFloat(siteStats.avgRating || 0).toFixed(1)) : '0.0'}
                 </div>
                 <div className="text-sm text-gray-400">متوسط التقييم</div>
               </div>
